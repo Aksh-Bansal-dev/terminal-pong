@@ -40,11 +40,16 @@ func main() {
 		exec.Command("stty", "-F", "/dev/tty", "-echo").Run()
 		var b []byte = make([]byte, 1)
 		debounceTimer := time.Now()
+		prevChar := "$"
 		for {
 			os.Stdin.Read(b)
 			if debounceTimer.Sub(time.Now()).Milliseconds() <= 0 {
-				ch <- string(b)
-				debounceTimer = time.Now().Add(time.Millisecond * 50)
+				input := string(b)
+				ch <- input
+				if input == prevChar {
+					debounceTimer = time.Now().Add(time.Millisecond * 50)
+				}
+				prevChar = input
 			}
 		}
 	}()
@@ -58,6 +63,10 @@ func main() {
 					playarea.move(P2, LEFT_MOVE)
 				} else if stdin == "d" {
 					playarea.move(P2, RIGHT_MOVE)
+				} else if stdin == "h" {
+					playarea.move(P1, LEFT_MOVE)
+				} else if stdin == "l" {
+					playarea.move(P1, RIGHT_MOVE)
 				}
 			default:
 				reading = false
