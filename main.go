@@ -78,12 +78,13 @@ func main() {
 				reading = false
 			}
 		}
-		end := false
+		end := 0
 		if iteration == 0 {
 			end = playarea.moveBall()
 		}
 		playarea.draw()
-		if end {
+		if end > 0 {
+			fmt.Printf("\nPlayer%d Won!\n", end)
 			os.Exit(0)
 		}
 		frameSleep()
@@ -99,17 +100,17 @@ func (p *Playarea) draw() {
 	}
 }
 
-func (p *Playarea) moveBall() bool {
+func (p *Playarea) moveBall() int {
 	ball := p.ball
 	p.mat[ball[0]][ball[1]] = ' '
 	ball[0] += p.ballDir[0]
 	ball[1] += p.ballDir[1]
 	if ball[0] == 1 && (p.p1 > ball[1] || p.p1+p.batLen < ball[1]) {
 		p.mat[ball[0]][ball[1]] = 'o'
-		return true
+		return 2
 	} else if ball[0] == p.n && (p.p2 > ball[1] || p.p2+p.batLen < ball[1]) {
 		p.mat[ball[0]][ball[1]] = 'o'
-		return true
+		return 1
 	} else if ball[0] == p.n && (p.p2 <= ball[1] && p.p2+p.batLen >= ball[1]) {
 		p.ballDir = [2]int{-1, p.p2Dir}
 	} else if ball[0] == 1 && (p.p1 <= ball[1] && p.p1+p.batLen >= ball[1]) {
@@ -117,8 +118,11 @@ func (p *Playarea) moveBall() bool {
 	} else {
 		p.mat[ball[0]][ball[1]] = 'o'
 		p.ball = ball
+		if ball[1] == p.m || ball[1] == 1 {
+			p.ballDir[1] *= -1
+		}
 	}
-	return false
+	return 0
 }
 
 func (p *Playarea) move(player, dir int) {
