@@ -63,13 +63,13 @@ func main() {
 			select {
 			case stdin, _ := <-ch:
 				if stdin == "a" {
-					playarea.move(P2, LEFT_MOVE)
+					playarea.move(P2, LEFT_MOVE, config.BatSpeed)
 				} else if stdin == "f" {
-					playarea.move(P2, RIGHT_MOVE)
+					playarea.move(P2, RIGHT_MOVE, config.BatSpeed)
 				} else if stdin == "h" {
-					playarea.move(P1, LEFT_MOVE)
+					playarea.move(P1, LEFT_MOVE, config.BatSpeed)
 				} else if stdin == "l" {
-					playarea.move(P1, RIGHT_MOVE)
+					playarea.move(P1, RIGHT_MOVE, config.BatSpeed)
 				}
 			default:
 				reading = false
@@ -122,12 +122,12 @@ func (p *Playarea) moveBall() int {
 	return 0
 }
 
-func (p *Playarea) move(player, dir int) {
+func (p *Playarea) move(player, dir int, batSpeed int) {
 	row := 1
 	if player == P2 {
 		row = p.n
 	}
-	for i := 1; i < p.m; i++ {
+	for i := 1; i <= p.m; i++ {
 		p.mat[row][i] = ' '
 	}
 
@@ -135,24 +135,24 @@ func (p *Playarea) move(player, dir int) {
 		if player == P1 {
 			if p.p1 > 1 {
 				p.p1Dir = -1
-				p.p1--
+				p.p1 -= batSpeed
 			}
 		} else {
 			if p.p2 > 1 {
 				p.p2Dir = -1
-				p.p2--
+				p.p2 -= batSpeed
 			}
 		}
 	} else {
 		if player == P1 {
 			if p.p1 < p.m-p.batLen {
 				p.p1Dir = 1
-				p.p1++
+				p.p1 += batSpeed
 			}
 		} else {
 			if p.p2 < p.m-p.batLen {
 				p.p2Dir = 1
-				p.p2++
+				p.p2 += batSpeed
 			}
 		}
 	}
