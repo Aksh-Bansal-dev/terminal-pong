@@ -30,11 +30,8 @@ const (
 )
 
 func main() {
-	var (
-		n = 25
-		m = 100
-	)
-	playarea := newPlayarea(n, m)
+	config := getConfig("./config.json")
+	playarea := newPlayarea(config)
 
 	// taking user input
 	ch := make(chan string)
@@ -88,7 +85,7 @@ func main() {
 			os.Exit(0)
 		}
 		frameSleep()
-		iteration = (iteration + 1) % 2
+		iteration = (iteration + 1) % (5 - config.BallSpeed)
 	}
 }
 
@@ -169,7 +166,9 @@ func (p *Playarea) move(player, dir int) {
 	}
 }
 
-func newPlayarea(n, m int) Playarea {
+func newPlayarea(config Config) Playarea {
+	n := config.Rows
+	m := config.Cols
 	mat := [][]byte{}
 	for i := -1; i <= n; i++ {
 		temp := []byte{}
@@ -184,7 +183,7 @@ func newPlayarea(n, m int) Playarea {
 		}
 		mat = append(mat, temp)
 	}
-	for i := m/2 - 4; i < m/2+4; i++ {
+	for i := m/2 - config.BatLength/2; i < m/2+config.BatLength/2; i++ {
 		mat[n][i] = '='
 		mat[1][i] = '='
 	}
@@ -193,13 +192,13 @@ func newPlayarea(n, m int) Playarea {
 		n:       n,
 		m:       m,
 		mat:     mat,
-		p1:      m/2 - 4,
-		p2:      m/2 - 4,
+		p1:      m/2 - config.BatLength/2,
+		p2:      m/2 - config.BatLength/2,
 		p1Dir:   0,
 		p2Dir:   0,
 		ball:    [2]int{n / 2, m / 2},
 		ballDir: [2]int{1, 0},
-		batLen:  8}
+		batLen:  config.BatLength}
 }
 
 func frameSleep() {
